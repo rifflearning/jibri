@@ -262,6 +262,10 @@ class JibriSelenium(
         }
     }
 
+    fun startCapturing(dispatcherUrl: String): Boolean = CallPage(chromeDriver).startCapturing(dispatcherUrl)
+
+    fun stopCapturing(): Boolean = CallPage(chromeDriver).stopCapturing()
+
     fun getParticipants(): List<Map<String, Any>> {
         return CallPage(chromeDriver).getParticipants()
     }

@@ -117,6 +117,10 @@ class FileRecordingJibriService(
         }
         "jibri.recording.finalize-script".from(Config.configSource)
     }
+    private val dispatcherUrl: String by config {
+        "JibriConfig::dispatcherUrl" { Config.legacyConfigSource.dispatcherUrl!! }
+        "jibri.analysis.dispatcher".from(Config.configSource)
+    }
     /**
      * The directory in which we'll store recordings for this particular session.  This is a directory that will
      * be nested within [recordingsDirectory].
@@ -149,10 +153,12 @@ class FileRecordingJibriService(
 
         whenever(jibriSelenium).transitionsTo(ComponentState.Running) {
             logger.info("Selenium joined the call, starting the capturer")
+            logger.info("Dispatcher url for analysis processes creation: $dispatcherUrl")
             try {
                 jibriSelenium.addToPresence("session_id", fileRecordingParams.sessionId)
                 jibriSelenium.addToPresence("mode", JibriIq.RecordingMode.FILE.toString())
                 jibriSelenium.sendPresence()
+                jibriSelenium.startCapturing(dispatcherUrl)
                 capturer.start(sink)
             } catch (t: Throwable) {
                 logger.error("Error while setting fields in presence", t)
@@ -163,6 +169,7 @@ class FileRecordingJibriService(
 
     override fun stop() {
         logger.info("Stopping capturer")
+        jibriSelenium.stopCapturing()
         capturer.stop()
         logger.info("Quitting selenium")
         val participants = try {
