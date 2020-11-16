@@ -116,7 +116,7 @@ data class XmppEnvironmentConfig(
     val trustAllXmppCerts: Boolean = true
 )
 
-public fun com.typesafe.config.Config.toXmppEnvironment(): XmppEnvironmentConfig =
+fun com.typesafe.config.Config.toXmppEnvironment(): XmppEnvironmentConfig =
     XmppEnvironmentConfig(
         name = getString("name"),
         xmppServerHosts = getStringList("xmpp-server-hosts"),
@@ -155,7 +155,9 @@ data class JibriConfig(
     @JsonProperty("finalize_recording_script_path")
     val finalizeRecordingScriptPath: String? = null,
     @JsonProperty("xmpp_environments")
-    val xmppEnvironments: List<XmppEnvironmentConfig>? = null
+    val xmppEnvironments: List<XmppEnvironmentConfig>? = null,
+    @JsonProperty("dispatcher_url")
+    val dispatcherUrl: String? = null
 )
 
 fun loadConfigFromFile(configFile: File): JibriConfig? {

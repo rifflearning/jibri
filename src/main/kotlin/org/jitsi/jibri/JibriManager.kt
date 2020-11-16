@@ -30,6 +30,8 @@ import org.jitsi.jibri.service.impl.SipGatewayJibriService
 import org.jitsi.jibri.service.impl.SipGatewayServiceParams
 import org.jitsi.jibri.service.impl.StreamingJibriService
 import org.jitsi.jibri.service.impl.StreamingParams
+import org.jitsi.jibri.service.impl.WebRecordingJibriService
+import org.jitsi.jibri.service.impl.WebRecordingParams
 import org.jitsi.jibri.statsd.ASPECT_BUSY
 import org.jitsi.jibri.statsd.ASPECT_ERROR
 import org.jitsi.jibri.statsd.ASPECT_START
@@ -127,6 +129,8 @@ class JibriManager : StatusPublisher<Any>() {
     /**
      * Starts a [FileRecordingJibriService] to record the call described
      * in the params to a file.
+     *
+     * TODO: Using a WebRecordingJibriService without ffmpeg instead is a temp solution
      */
     @Synchronized
     fun startFileRecording(
@@ -137,12 +141,11 @@ class JibriManager : StatusPublisher<Any>() {
     ) {
         throwIfBusy()
         logger.info("Starting a file recording with params: $fileRecordingRequestParams")
-        val service = FileRecordingJibriService(
-            FileRecordingParams(
+        val service = WebRecordingJibriService(
+            WebRecordingParams(
                 fileRecordingRequestParams.callParams,
                 fileRecordingRequestParams.sessionId,
-                fileRecordingRequestParams.callLoginParams,
-                serviceParams.appData?.fileRecordingMetadata
+                fileRecordingRequestParams.callLoginParams
             )
         )
         statsDClient?.incrementCounter(ASPECT_START, TAG_SERVICE_RECORDING)
